@@ -1,0 +1,70 @@
+{
+  // ─── GitBackupWatcher — Dev Container Configuration ───────────────────────
+  // Java 21 + Git pre-configured for GitHub Codespaces
+  // Place this file at: .devcontainer/devcontainer.json in your repo root
+
+  "name": "GitBackupWatcher (Java 21)",
+
+  // ── Base image ─────────────────────────────────────────────────────────────
+  // Official Microsoft Java devcontainer image (Java 21 LTS)
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bullseye",
+
+  // ── Features ───────────────────────────────────────────────────────────────
+  "features": {
+    // Java 21 with Maven (for future dependency management e.g. JGit)
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": "true",
+      "installGradle": "false"
+    },
+    // Git (latest stable) — required for git add/commit/push in automation
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": "false"
+    }
+  },
+
+  // ── VS Code extensions ─────────────────────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",         // Java IntelliSense + debugger
+        "vscjava.vscode-maven",             // Maven project support
+        "redhat.java",                      // Language server
+        "vscjava.vscode-java-debug",        // Run/debug Java
+        "mhutchie.git-graph",               // Visualise git history
+        "eamodio.gitlens"                   // Git blame + annotations
+      ],
+      "settings": {
+        "java.jdt.ls.java.home": "/usr/local/sdkman/candidates/java/current",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "editor.formatOnSave": true,
+        "files.autoSave": "onWindowChange"
+      }
+    }
+  },
+
+  // ── Port forwarding ────────────────────────────────────────────────────────
+  // Uncomment if you add a status HTTP server to GitBackupWatcher later
+  // "forwardPorts": [8080],
+
+  // ── Lifecycle hooks ────────────────────────────────────────────────────────
+
+  // Runs once when the container is first created
+  "onCreateCommand": "echo 'Container created — setting up GitBackupWatcher...'",
+
+  // Runs every time the container starts — compiles your watcher automatically
+  "postStartCommand": "cd /workspaces/${localWorkspaceFolderBasename} && javac GitBackupWatcher.java && echo '✅ GitBackupWatcher compiled and ready.'",
+
+  // Runs after the container is fully ready (shown in terminal)
+  "postCreateCommand": "java -version && git --version && echo '✅ Environment ready! Run: java GitBackupWatcher /workspaces/<your-repo>'",
+
+  // ── Container user ─────────────────────────────────────────────────────────
+  "remoteUser": "vscode",
+
+  // ── Environment variables ──────────────────────────────────────────────────
+  "remoteEnv": {
+    // Ensures git uses the Codespaces credential helper automatically
+    "GIT_TERMINAL_PROMPT": "0"
+  }
+}
